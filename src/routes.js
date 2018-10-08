@@ -86,9 +86,16 @@ module.exports = (app) => {
     res.send(JSON.stringify(himnos))
   })
 
-  app.post('/prueba', async (req, res) => {
-    console.log(`\n\n${req.body.profile}\n\n`)
+  app.post('/updates', async (req, res) => {
+    var recent = (await sequelize.query(`select * from parrafos where updatedAt > '${req.body.latest}' order by updatedAt desc`))[0]
+    res.send(JSON.stringify(recent))
   })
+
+  app.post('/fix', async (req, res) => {
+    await sequelize.query(`update parrafos set parrafo = '${req.body.fix}', updatedAt = CURRENT_TIMESTAMP where parrafo = '${req.body.parrafo}'`)
+    res.send(true)
+  })
+
 }
 
 // const mediaserver = require('mediaserver')
